@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prisberegner &amp; leadmodul – Torben Clausen A/S</title>
+<meta name="description" content="Live demo af det interaktive prisestimat- og leadmodul til Torben Clausen A/S.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2210%22%20fill%3D%22%23C42032%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2243%22%20font-family%3D%22Arial%2CHelvetica%2Csans-serif%22%20font-size%3D%2230%22%20font-weight%3D%22bold%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3ETC%3C%2Ftext%3E%3C%2Fsvg%3E">
+<style>
+  :root{
+    --tc-red:#C42032;
+    --tc-red-deep:#7E1620;
+    --tc-ink:#242424;
+    --tc-ink-soft:#5A5A5A;
+    --tc-line:#E2E2E2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#EFEFEF;
+    font-family:Arial,Helvetica,"Helvetica Neue",sans-serif;
+    color:var(--tc-ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Demolinje – hører ikke med til modulet, den findes kun på denne testside */
+  .demobar{
+    background:var(--tc-ink);
+    color:#fff;
+    padding:10px 20px;
+    font-size:13.5px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 16px;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  .demobar strong{font-weight:700;}
+  .demobar a{color:#fff;text-decoration:underline;}
+  .demobar a:hover{color:#FFD3D8;}
+  .demobar .tag{
+    background:var(--tc-red);
+    border-radius:3px;
+    padding:2px 8px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    font-size:11.5px;
+  }
+
+  /* Selve modulet indlejres her, så der kun findes én kopi af koden i repoet */
+  .stage{padding:0 0 10px;}
+  #modul{
+    display:block;
+    width:100%;
+    border:0;
+    min-height:200px;   /* kun indtil scriptet har målt indholdet */
+    background:transparent;
+  }
+  .fallback{
+    max-width:880px;
+    margin:32px auto;
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+    padding:28px 30px;
+  }
+  .fallback h2{margin:0 0 8px;font-size:20px;color:var(--tc-red);}
+  .fallback p{margin:0 0 10px;font-size:15px;color:var(--tc-ink-soft);}
+
+  /* Noter under modulet */
+  .noter{
+    max-width:880px;
+    margin:24px auto 0;
+    padding:0 20px 48px;
+  }
+  .kort{
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 4px 15px rgba(0,0,0,.1);
+    padding:26px 30px;
+  }
+  .kort h2{
+    margin:0 0 4px;
+    font-size:19px;
+    line-height:1.3;
+  }
+  .kort p.lead{margin:0 0 18px;color:var(--tc-ink-soft);font-size:14.5px;}
+  .kort h3{
+    margin:20px 0 6px;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.7px;
+    color:var(--tc-ink-soft);
+  }
+  .kort ol,.kort ul{margin:0;padding-left:20px;font-size:14.5px;}
+  .kort li{margin-bottom:6px;}
+  .kort a{color:var(--tc-red);}
+  .kort code{
+    background:#F3F3F3;
+    border:1px solid var(--tc-line);
+    border-radius:3px;
+    padding:1px 5px;
+    font-size:13px;
+    font-family:Consolas,Monaco,"Courier New",monospace;
+    word-break:break-all;
+  }
+  .sidefod{
+    background:var(--tc-red-deep);
+    color:#fff;
+    padding:16px 20px;
+    text-align:center;
+    font-size:12.5px;
+  }
+  @media (max-width:680px){
+    .kort{padding:20px;}
+    .noter{padding:0 14px 36px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="demobar">
+  <span class="tag">Demo</span>
+  <span>Sådan ser modulet ud i drift. Koden ligger i <strong>torben-clausen-lead-modul.html</strong> –
+  <a href="torben-clausen-lead-modul.html">åbn filen</a> og kopiér hele indholdet ind i en Custom HTML-blok.</span>
+</div>
+
+<div class="stage">
+  <iframe id="modul" src="torben-clausen-lead-modul.html" title="Prisberegner og leadmodul – Torben Clausen A/S" scrolling="no"></iframe>
+  <noscript>
+    <div class="fallback">
+      <h2>JavaScript er slået fra</h2>
+      <p>Modulet er interaktivt og kræver JavaScript. Slå det til, eller åbn
+      <a href="torben-clausen-lead-modul.html">torben-clausen-lead-modul.html</a> direkte.</p>
+    </div>
+  </noscript>
+</div>
+
+<div class="noter">
+  <div class="kort">
+    <h2>Om denne side</h2>
+    <p class="lead">Siden her er kun en visningsramme. Alt det røde ovenfor er selve modulet –
+    demolinjen i toppen og teksten hernede følger ikke med over på hjemmesiden.</p>
+
+    <h3>Sådan lægger du modulet på torbenclausen.dk</h3>
+    <ol>
+      <li>Åbn <a href="torben-clausen-lead-modul.html">torben-clausen-lead-modul.html</a> og kopiér <strong>hele indholdet</strong>.</li>
+      <li>Indsæt det i en Custom HTML-blok / kodeblok på den ønskede side.</li>
+      <li>Færdig – modulet centrerer sig selv i indholdsbredden (maks. 880&nbsp;px).</li>
+    </ol>
+
+    <h3>Prøv gerne</h3>
+    <ul>
+      <li>Vælg <strong>Nedbrydning</strong> og skriv byggeår <code>1972</code> – så dukker asbest-indsigten op.</li>
+      <li>Vælg <strong>Transport</strong>, <em>bigbags</em> og mere end 5 tons – så kommer pro-tippet om løs levering.</li>
+      <li>Gennemfør et forløb og hent PDF-rapporten på sidste trin.</li>
+    </ul>
+
+    <h3>Dokumentation</h3>
+    <p style="font-size:14.5px;margin:0;">Priser, leadhåndtering og test er beskrevet i
+    <a href="https://github.com/jimhoeeg/Torben-Clausen/blob/main/README.md">README</a>.</p>
+  </div>
+</div>
+
+<div class="sidefod">
+  Torben Clausen A/S · Entrepriser på sikker grund · Oksbølvej 14, 6100 Haderslev · Tlf. 74 52 47 23
+</div>
+
+<script>
+/* Modulet ligger i en iframe, så koden kun findes ét sted i repoet.
+   Her holdes iframens højde synkroniseret med indholdet, så siden
+   ikke får en indre scrollbar. */
+(function () {
+  var f = document.getElementById('modul');
+  var sidste = 0;
+
+  function tilpas() {
+    try {
+      var d = f.contentDocument;
+      if (!d || !d.body) { return; }
+      /* Vi måler på selve modulet – ikke på body.scrollHeight. Body kan aldrig
+         blive lavere end iframens egen højde, så en for høj iframe ville ellers
+         låse sig fast i den højde og aldrig kunne krympe igen. */
+      var el = d.getElementById('tcx');
+      var h;
+      if (el) {
+        var bund = el.getBoundingClientRect().bottom;
+        var mb = parseFloat(d.defaultView.getComputedStyle(el).marginBottom) || 0;
+        var bodyMb = parseFloat(d.defaultView.getComputedStyle(d.body).marginBottom) || 0;
+        h = Math.ceil(bund + mb + bodyMb);
+      } else {
+        h = d.body.scrollHeight;
+      }
+      if (h > 0 && Math.abs(h - sidste) > 1) { sidste = h; f.style.height = h + 'px'; }
+    } catch (e) {
+      /* Kan ikke læse indholdet (f.eks. ved åbning direkte fra disk).
+         Så får iframen en fast højde og sin egen scrollbar. */
+      f.style.height = '1800px';
+      f.setAttribute('scrolling', 'auto');
+    }
+  }
+
+  f.addEventListener('load', function () {
+    tilpas();
+    try {
+      if (window.ResizeObserver) {
+        /* Observér modulet selv, ikke body: body strækkes altid ud til iframens
+           højde, så den ville aldrig melde om, at indholdet er blevet lavere. */
+        var maal = f.contentDocument.getElementById('tcx') || f.contentDocument.body;
+        new ResizeObserver(tilpas).observe(maal);
+      }
+    } catch (e) {}
+    /* Ekstra tilpasninger efter modulets ind-/udtoning af trin og indsigter */
+    [100, 400, 800, 1500].forEach(function (ms) { setTimeout(tilpas, ms); });
+  });
+
+  window.addEventListener('resize', tilpas);
+})();
+</script>
+
+</body>
+</html>

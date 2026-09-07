@@ -8,9 +8,23 @@ genererer til sidst en 2-siders PDF-rapport i browseren.
 | Fil | Indhold |
 | --- | --- |
 | `torben-clausen-lead-modul.html` | Hele modulet – markup, `<style>` og `<script>`. Det er denne fil, der kopieres ind i CMS'et. |
-| `test/module.test.js` | Automatisk browsertest af flow, validering, indsigter, beregninger og PDF (Playwright). |
+| `index.html` | Demoside, der viser modulet i drift. Bruges af GitHub Pages – følger **ikke** med over på hjemmesiden. |
+| `test/module.test.js` | Browsertest af flow, validering, indsigter, beregninger og PDF (Playwright). |
+| `test/pages.test.js` | Browsertest af demosiden – indlejring, højdetilpasning og PDF-download. |
 
-Filen kan åbnes direkte i en browser for at se modulet i drift.
+## Se modulet i drift
+
+Slå GitHub Pages til for repoet (**Settings → Pages → Source: Deploy from a branch**,
+og vælg den branch, koden ligger på). Siden ligger herefter på:
+
+**https://jimhoeeg.github.io/Torben-Clausen/**
+
+`index.html` indlejrer modulet i en iframe, så koden kun findes ét sted i repoet, og
+tilpasser løbende højden til indholdet. Demolinjen i toppen og teksten under modulet
+hører kun til demosiden – det er kun `torben-clausen-lead-modul.html`, der skal over
+på torbenclausen.dk.
+
+Modulfilen kan også åbnes direkte i en browser.
 
 ---
 
@@ -146,10 +160,18 @@ node test/module.test.js
 Har du allerede en Chromium liggende, kan den bruges direkte:
 `CHROME_PATH=/sti/til/chrome node test/module.test.js`
 
-Testen dækker alle fire områder: trinnavigation, feltvalidering, at de rigtige
-ekspert-indsigter dukker op og forsvinder igen, at beregningerne rammer de
+`module.test.js` dækker alle fire områder: trinnavigation, feltvalidering, at de
+rigtige ekspert-indsigter dukker op og forsvinder igen, at beregningerne rammer de
 forventede beløb, at leadgaten ikke kan omgås, honeypot, `tc:lead`-eventet samt at
 PDF'en faktisk genereres med to sider.
+
+`pages.test.js` starter sin egen webserver og tester demosiden: at modulet
+indlejres, at iframens højde både vokser og krymper med indholdet (også ved skift
+mellem mobil og desktop), og at PDF'en kan hentes gennem iframen.
+
+```bash
+node test/pages.test.js
+```
 
 Bemærk: testen indlæser jsPDF lokalt (`jspdf.umd.min.js` ved siden af testsiden),
 så den kan køre uden netadgang til CDN'et.
