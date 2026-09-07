@@ -1,0 +1,1389 @@
+<!-- ==========================================================================
+     TORBEN CLAUSEN A/S – Prisberegner & Leadmodul
+     Vanilla HTML / CSS / JS. Ingen frameworks.
+     Kopier hele denne blok ind i en "Custom HTML"-blok i jeres CMS.
+     Eneste eksterne afhængighed: jsPDF (CDN) – bruges kun til PDF-download.
+     ========================================================================== -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+<div class="tcx" id="tcx">
+
+  <!-- Header -->
+  <div class="tcx-head">
+    <div class="tcx-head-txt">
+      <h2 class="tcx-h2">Få et prisestimat på dit projekt</h2>
+      <p class="tcx-sub">Svar på 3–4 spørgsmål og få med det samme et vejledende prisinterval samt en personlig projektrapport som PDF.</p>
+    </div>
+    <div class="tcx-badge">
+      <span class="tcx-badge-t">Gratis&nbsp;&amp;&nbsp;uforpligtende</span>
+      <span class="tcx-badge-s">Tager ca. 60 sekunder</span>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="tcx-progress" aria-hidden="true">
+    <div class="tcx-bar"><span class="tcx-bar-fill" id="tcxBarFill"></span></div>
+    <ol class="tcx-steps" id="tcxSteps">
+      <li data-step="1"><span class="tcx-dot">1</span><span class="tcx-lbl">Område</span></li>
+      <li data-step="2"><span class="tcx-dot">2</span><span class="tcx-lbl">Detaljer</span></li>
+      <li data-step="3"><span class="tcx-dot">3</span><span class="tcx-lbl">Kontakt</span></li>
+      <li data-step="4"><span class="tcx-dot">4</span><span class="tcx-lbl">Resultat</span></li>
+    </ol>
+  </div>
+
+  <div class="tcx-body" id="tcxBody" aria-live="polite">
+
+    <!-- ---------------- STEP 1 ---------------- -->
+    <section class="tcx-step is-active" data-step="1" id="tcxStep1">
+      <h3 class="tcx-q">Hvilket område drejer dit projekt sig om?</h3>
+      <p class="tcx-qsub">Vælg det der passer bedst – du kan altid skifte undervejs.</p>
+      <div class="tcx-cards" id="tcxCards" role="group" aria-label="Vælg område"></div>
+    </section>
+
+    <!-- ---------------- STEP 2 ---------------- -->
+    <section class="tcx-step" data-step="2" id="tcxStep2">
+      <h3 class="tcx-q" id="tcxStep2Title">Fortæl lidt mere om opgaven</h3>
+      <p class="tcx-qsub" id="tcxStep2Sub"></p>
+      <div class="tcx-fields" id="tcxFields"></div>
+      <div class="tcx-insights" id="tcxInsights"></div>
+      <div class="tcx-nav">
+        <button type="button" class="tcx-btn tcx-btn-ghost" data-goto="1">&#8592; Tilbage</button>
+        <button type="button" class="tcx-btn tcx-btn-primary" id="tcxToLead">Beregn mit estimat &#8594;</button>
+      </div>
+      <p class="tcx-err" id="tcxStep2Err" role="alert"></p>
+    </section>
+
+    <!-- ---------------- STEP 3 ---------------- -->
+    <section class="tcx-step" data-step="3" id="tcxStep3">
+      <div class="tcx-lock">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </div>
+      <h3 class="tcx-q tcx-center">Din rapport og dit pris-estimat er klar!</h3>
+      <p class="tcx-qsub tcx-center">Udfyld nedenfor, så låser vi dit personlige prisinterval op – og du kan hente din projektrapport som PDF.</p>
+
+      <form class="tcx-form" id="tcxForm" novalidate autocomplete="on">
+        <div class="tcx-row">
+          <label class="tcx-field">
+            <span class="tcx-flabel">E-mail <em>*</em></span>
+            <input type="email" id="tcxEmail" name="email" placeholder="navn@firma.dk" autocomplete="email" required>
+            <span class="tcx-ferr" data-for="email"></span>
+          </label>
+        </div>
+        <div class="tcx-row tcx-row-2">
+          <label class="tcx-field">
+            <span class="tcx-flabel">Navn</span>
+            <input type="text" id="tcxName" name="navn" placeholder="Fornavn Efternavn" autocomplete="name">
+            <span class="tcx-ferr" data-for="navn"></span>
+          </label>
+          <label class="tcx-field">
+            <span class="tcx-flabel">Telefon</span>
+            <input type="tel" id="tcxPhone" name="telefon" placeholder="12 34 56 78" autocomplete="tel" inputmode="tel">
+            <span class="tcx-ferr" data-for="telefon"></span>
+          </label>
+        </div>
+
+        <!-- honeypot: skjult for mennesker, udfyldes af bots -->
+        <div class="tcx-hp" aria-hidden="true"><label>Firmaadresse<input type="text" id="tcxHp" name="firma_adresse" tabindex="-1" autocomplete="off"></label></div>
+
+        <label class="tcx-consent">
+          <input type="checkbox" id="tcxConsent">
+          <span>Ja tak – Torben Clausen A/S må kontakte mig om dette projekt. Dine oplysninger behandles fortroligt og videregives ikke. <a href="/politik-om-beskyttelse-af-persondata" target="_blank" rel="noopener">Læs persondatapolitik</a>.</span>
+        </label>
+        <span class="tcx-ferr" data-for="consent"></span>
+
+        <div class="tcx-nav">
+          <button type="button" class="tcx-btn tcx-btn-ghost" data-goto="2">&#8592; Tilbage</button>
+          <button type="submit" class="tcx-btn tcx-btn-primary tcx-btn-lg" id="tcxUnlock">Lås op og se min pris</button>
+        </div>
+        <p class="tcx-fineprint">Vi sender ikke nyhedsbreve uden dit samtykke. Estimatet er vejledende og ikke et bindende tilbud.</p>
+      </form>
+    </section>
+
+    <!-- ---------------- STEP 4 ---------------- -->
+    <section class="tcx-step" data-step="4" id="tcxStep4">
+      <p class="tcx-eyebrow" id="tcxResultEyebrow">Dit estimat</p>
+      <h3 class="tcx-q tcx-center" id="tcxResultTitle">Vejledende prisinterval</h3>
+
+      <div class="tcx-pricebox">
+        <span class="tcx-price-label">Estimeret pris for opgaven</span>
+        <p class="tcx-price" id="tcxPrice">–</p>
+        <span class="tcx-price-note">Ekskl. moms · vejledende interval &plusmn;15&nbsp;%</span>
+      </div>
+
+      <div class="tcx-breakdown">
+        <h4 class="tcx-h4">Sådan er estimatet sammensat</h4>
+        <table class="tcx-table" id="tcxTable"><tbody></tbody></table>
+        <p class="tcx-disclaimer">Beregningen bygger på vores gennemsnitlige erfaringspriser for tilsvarende opgaver i Syd- og Sønderjylland. Den endelige pris fastlægges efter besigtigelse, hvor bl.a. adgangsforhold, jordbund, miljøscreening og tidsplan indgår.</p>
+      </div>
+
+      <div class="tcx-summary">
+        <h4 class="tcx-h4">Dine oplysninger</h4>
+        <ul class="tcx-sumlist" id="tcxSummary"></ul>
+      </div>
+
+      <div class="tcx-insights tcx-insights-static" id="tcxInsightsResult"></div>
+
+      <div class="tcx-cta">
+        <button type="button" class="tcx-btn tcx-btn-primary tcx-btn-lg tcx-btn-block" id="tcxPdf">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download din fulde projekt-rapport (PDF)
+        </button>
+        <p class="tcx-pdfnote" id="tcxPdfNote"></p>
+        <div class="tcx-contact">
+          <span>Vil du have en fast pris? Ring til os på <a href="tel:+4574524723"><strong>74 52 47 23</strong></a> eller skriv til <a href="mailto:info@torbenclausen.dk">info@torbenclausen.dk</a></span>
+        </div>
+        <div class="tcx-again">
+          <button type="button" class="tcx-restart" data-goto="2">&#8592; Ret mine oplysninger</button>
+          <span class="tcx-again-sep" aria-hidden="true">·</span>
+          <button type="button" class="tcx-restart" id="tcxRestart">Beregn et nyt projekt</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="tcx-foot">
+    <span class="tcx-foot-logo">Torben Clausen A/S</span>
+    <span class="tcx-foot-tag">Entrepriser på sikker grund · Oksbølvej 14, 6100 Haderslev · CVR 14163581</span>
+  </div>
+</div>
+
+<style>
+/* ==========================================================================
+   Torben Clausen A/S – Leadmodul. Alt er scoped til .tcx for at undgå
+   konflikter med temaets egen CSS.
+   ========================================================================== */
+.tcx{
+  --tc-red:#C42032;
+  --tc-red-dark:#9C1927;
+  --tc-red-deep:#7E1620;
+  --tc-ink:#242424;
+  --tc-ink-soft:#5A5A5A;
+  --tc-line:#E2E2E2;
+  --tc-bg:#F6F6F6;
+  --tc-radius:8px;
+  box-sizing:border-box;
+  max-width:880px;
+  margin:32px auto;
+  background:#FFFFFF;
+  border-radius:var(--tc-radius);
+  box-shadow:0 4px 15px rgba(0,0,0,.1);
+  overflow:hidden;
+  font-family:Arial,Helvetica,"Helvetica Neue",sans-serif;
+  color:var(--tc-ink);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.tcx *,.tcx *::before,.tcx *::after{box-sizing:border-box;}
+.tcx p,.tcx h2,.tcx h3,.tcx h4,.tcx ul,.tcx ol{margin:0;padding:0;}
+.tcx ul,.tcx ol{list-style:none;}
+.tcx a{color:var(--tc-red);text-decoration:underline;}
+.tcx a:hover{color:var(--tc-red-dark);}
+
+/* ---------- Header ---------- */
+.tcx-head{
+  display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
+  background:var(--tc-red);color:#fff;padding:26px 30px;
+}
+.tcx-head-txt{flex:1 1 320px;min-width:0;}
+.tcx-h2{font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.2px;}
+.tcx-sub{margin-top:8px;font-size:15px;opacity:.93;max-width:52ch;}
+.tcx-badge{
+  flex:0 0 auto;display:flex;flex-direction:column;text-align:right;
+  border-left:1px solid rgba(255,255,255,.3);padding-left:18px;
+}
+.tcx-badge-t{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.tcx-badge-s{font-size:13px;opacity:.85;}
+
+/* ---------- Progress ---------- */
+.tcx-progress{padding:20px 30px 0;}
+.tcx-bar{height:4px;background:var(--tc-line);border-radius:99px;overflow:hidden;}
+.tcx-bar-fill{display:block;height:100%;width:25%;background:var(--tc-red);border-radius:99px;transition:width .45s cubic-bezier(.4,0,.2,1);}
+.tcx-steps{display:flex;gap:6px;margin-top:12px;}
+.tcx-steps li{flex:1 1 0;display:flex;align-items:center;gap:8px;font-size:13px;color:#9A9A9A;min-width:0;}
+.tcx-dot{
+  flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--tc-line);color:#8A8A8A;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  transition:background .3s,color .3s;
+}
+.tcx-lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tcx-steps li.is-done .tcx-dot{background:#C9C9C9;color:#fff;}
+.tcx-steps li.is-current{color:var(--tc-ink);font-weight:700;}
+.tcx-steps li.is-current .tcx-dot{background:var(--tc-red);color:#fff;}
+
+/* ---------- Body / steps ---------- */
+.tcx-body{padding:26px 30px 32px;}
+.tcx-step{display:none;}
+.tcx-step.is-active{display:block;animation:tcxIn .35s ease both;}
+@keyframes tcxIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.tcx-q{font-size:21px;font-weight:700;line-height:1.3;}
+.tcx-qsub{margin-top:6px;color:var(--tc-ink-soft);font-size:15px;}
+.tcx-center{text-align:center;}
+.tcx-eyebrow{text-align:center;text-transform:uppercase;letter-spacing:1.4px;font-size:12px;font-weight:700;color:var(--tc-red);}
+.tcx-h4{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tc-ink-soft);margin-bottom:10px;}
+
+/* ---------- Step 1 cards ---------- */
+.tcx-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px;}
+.tcx-card{
+  display:flex;align-items:flex-start;gap:14px;text-align:left;
+  background:#fff;border:2px solid var(--tc-line);border-radius:var(--tc-radius);
+  padding:18px 18px;cursor:pointer;font:inherit;color:inherit;
+  transition:border-color .2s,box-shadow .2s,transform .2s;
+}
+.tcx-card:hover{border-color:#BEBEBE;box-shadow:0 4px 14px rgba(0,0,0,.08);transform:translateY(-2px);}
+.tcx-card.is-sel{border-color:var(--tc-red);box-shadow:0 4px 14px rgba(196,32,50,.15);}
+.tcx-card:focus-visible{outline:3px solid rgba(196,32,50,.35);outline-offset:2px;}
+.tcx-card-ico{flex:0 0 auto;width:44px;height:44px;border-radius:50%;background:#FBEDEE;color:var(--tc-red);display:flex;align-items:center;justify-content:center;}
+.tcx-card.is-sel .tcx-card-ico{background:var(--tc-red);color:#fff;}
+.tcx-card-t{display:block;font-weight:700;font-size:16px;line-height:1.25;}
+.tcx-card-d{display:block;margin-top:4px;font-size:13.5px;color:var(--tc-ink-soft);line-height:1.4;}
+
+/* ---------- Step 2 fields ---------- */
+.tcx-fields{margin-top:22px;display:flex;flex-direction:column;gap:22px;}
+.tcx-fld-label{display:block;font-weight:700;font-size:15.5px;margin-bottom:3px;}
+.tcx-fld-help{display:block;font-size:13.5px;color:var(--tc-ink-soft);margin-bottom:10px;}
+.tcx-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.tcx-opt{
+  background:#fff;border:2px solid var(--tc-line);border-radius:6px;padding:12px 14px;
+  cursor:pointer;font:inherit;color:inherit;text-align:left;line-height:1.3;
+  transition:border-color .18s,background .18s;
+}
+.tcx-opt:hover{border-color:#BEBEBE;background:#FAFAFA;}
+.tcx-opt.is-sel{border-color:var(--tc-red);background:#FDF3F4;font-weight:700;}
+.tcx-opt:focus-visible{outline:3px solid rgba(196,32,50,.35);outline-offset:2px;}
+.tcx-opt small{display:block;font-weight:400;font-size:12.5px;color:var(--tc-ink-soft);margin-top:2px;}
+.tcx-inputwrap{display:flex;align-items:stretch;max-width:340px;}
+.tcx-inputwrap input{
+  flex:1 1 auto;min-width:0;border:2px solid var(--tc-line);border-radius:6px;
+  padding:11px 13px;font:inherit;color:inherit;background:#fff;
+}
+.tcx-inputwrap.has-unit input{border-radius:6px 0 0 6px;}
+.tcx-unit{
+  display:flex;align-items:center;padding:0 14px;background:var(--tc-bg);
+  border:2px solid var(--tc-line);border-left:none;border-radius:0 6px 6px 0;
+  font-size:14px;font-weight:700;color:var(--tc-ink-soft);white-space:nowrap;
+}
+.tcx input:focus,.tcx select:focus,.tcx textarea:focus{outline:none;border-color:var(--tc-red);}
+.tcx-fld.has-error .tcx-inputwrap input,.tcx-fld.has-error .tcx-unit{border-color:var(--tc-red);}
+.tcx-fld.has-error .tcx-opts{outline:2px dashed rgba(196,32,50,.45);outline-offset:6px;border-radius:6px;}
+.tcx-fld-err{display:none;color:var(--tc-red);font-size:13.5px;font-weight:700;margin-top:7px;}
+.tcx-fld.has-error .tcx-fld-err{display:block;}
+
+/* ---------- Ekspert-indsigt ---------- */
+.tcx-insights{margin-top:22px;display:flex;flex-direction:column;gap:12px;}
+.tcx-insight{
+  background:#F2F2F2;border-left:4px solid var(--tc-red);border-radius:0 6px 6px 0;
+  padding:14px 16px;font-style:italic;font-size:14.5px;line-height:1.5;color:#3C3C3C;
+  animation:tcxFade .45s ease both;
+}
+@keyframes tcxFade{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.tcx-insight strong{display:block;font-style:normal;font-weight:700;color:var(--tc-red);margin-bottom:4px;font-size:13.5px;text-transform:uppercase;letter-spacing:.4px;}
+.tcx-insights-static{margin-top:26px;}
+
+/* ---------- Buttons ---------- */
+.tcx-nav{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:26px;}
+.tcx-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font:inherit;font-weight:700;border-radius:4px;padding:13px 26px;cursor:pointer;
+  border:2px solid transparent;transition:background .2s,color .2s,border-color .2s,transform .12s;
+}
+.tcx-btn:active{transform:translateY(1px);}
+.tcx-btn svg{flex:0 0 auto;}
+.tcx-btn:focus-visible{outline:3px solid rgba(196,32,50,.35);outline-offset:2px;}
+.tcx-btn-primary{background:var(--tc-red);color:#fff;border-color:var(--tc-red);}
+.tcx-btn-primary:hover{background:var(--tc-red-dark);border-color:var(--tc-red-dark);}
+.tcx-btn-ghost{background:transparent;color:var(--tc-ink-soft);border-color:var(--tc-line);}
+.tcx-btn-ghost:hover{color:var(--tc-ink);border-color:#BEBEBE;}
+.tcx-btn-lg{padding:15px 32px;font-size:16.5px;}
+.tcx-btn-block{width:100%;}
+.tcx-btn[disabled]{opacity:.6;cursor:not-allowed;}
+.tcx-err{color:var(--tc-red);font-weight:700;font-size:14px;margin-top:12px;min-height:1px;}
+
+/* ---------- Step 3 form ---------- */
+.tcx-lock{width:52px;height:52px;margin:0 auto 14px;border-radius:50%;background:#FBEDEE;color:var(--tc-red);display:flex;align-items:center;justify-content:center;}
+.tcx-form{margin-top:24px;background:var(--tc-bg);border:1px solid var(--tc-line);border-radius:var(--tc-radius);padding:24px;}
+.tcx-row{margin-bottom:16px;}
+.tcx-row-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+.tcx-field{display:block;}
+.tcx-flabel{display:block;font-weight:700;font-size:14.5px;margin-bottom:6px;}
+.tcx-flabel em{color:var(--tc-red);font-style:normal;}
+.tcx-field input{width:100%;border:2px solid var(--tc-line);border-radius:6px;padding:12px 13px;font:inherit;background:#fff;color:inherit;}
+.tcx-field.has-error input{border-color:var(--tc-red);}
+.tcx-ferr{display:none;color:var(--tc-red);font-size:13px;font-weight:700;margin-top:6px;}
+.tcx-field.has-error .tcx-ferr,.tcx-ferr.is-on{display:block;}
+.tcx-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+.tcx-consent{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--tc-ink-soft);line-height:1.45;cursor:pointer;}
+.tcx-consent input{flex:0 0 auto;width:18px;height:18px;margin-top:2px;accent-color:var(--tc-red);}
+.tcx-fineprint{margin-top:14px;font-size:12.5px;color:#8A8A8A;text-align:center;}
+
+/* ---------- Step 4 ---------- */
+.tcx-pricebox{
+  margin:20px 0 26px;text-align:center;background:var(--tc-bg);
+  border:1px solid var(--tc-line);border-top:4px solid var(--tc-red);
+  border-radius:var(--tc-radius);padding:26px 20px;
+}
+.tcx-price-label{display:block;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--tc-ink-soft);font-weight:700;}
+.tcx-price{
+  font-size:clamp(26px,5.2vw,40px);font-weight:700;color:var(--tc-red);
+  line-height:1.15;margin:10px 0 8px;letter-spacing:-.5px;
+}
+.tcx-price-note{display:block;font-size:13px;color:var(--tc-ink-soft);}
+.tcx-breakdown,.tcx-summary{margin-bottom:26px;}
+.tcx-table{width:100%;border-collapse:collapse;font-size:14.5px;}
+.tcx-table td{padding:11px 0;border-bottom:1px solid var(--tc-line);vertical-align:top;}
+.tcx-table td:last-child{text-align:right;white-space:nowrap;font-weight:700;padding-left:14px;}
+.tcx-table tr.is-total td{border-bottom:none;border-top:2px solid var(--tc-ink);font-weight:700;font-size:16px;padding-top:13px;}
+.tcx-table td small{display:block;font-weight:400;font-size:12.5px;color:var(--tc-ink-soft);margin-top:2px;}
+.tcx-disclaimer{margin-top:12px;font-size:12.5px;color:#8A8A8A;line-height:1.5;}
+.tcx-sumlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 24px;}
+.tcx-sumlist li{display:flex;flex-direction:column;gap:2px;border-bottom:1px solid var(--tc-line);padding-bottom:9px;}
+.tcx-sumlist span:first-child{color:var(--tc-ink-soft);font-size:13px;line-height:1.35;}
+.tcx-sumlist span:last-child{font-weight:700;font-size:15.5px;line-height:1.3;}
+.tcx-cta{margin-top:28px;}
+.tcx-pdfnote{margin-top:10px;font-size:13px;color:var(--tc-ink-soft);text-align:center;min-height:1px;}
+.tcx-contact{margin-top:18px;background:#FDF3F4;border:1px solid #F0D3D6;border-radius:var(--tc-radius);padding:16px 18px;text-align:center;font-size:15px;}
+.tcx-again{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:center;margin-top:18px;}
+.tcx-again-sep{color:#C9C9C9;}
+.tcx-restart{display:block;margin:0;background:none;border:none;font:inherit;font-size:14px;color:var(--tc-ink-soft);text-decoration:underline;cursor:pointer;}
+.tcx-restart:hover{color:var(--tc-red);}
+.tcx-restart:focus-visible{outline:3px solid rgba(196,32,50,.35);outline-offset:2px;border-radius:3px;}
+
+/* ---------- Footer ---------- */
+.tcx-foot{
+  background:var(--tc-red-deep);color:#fff;padding:16px 30px;
+  display:flex;flex-wrap:wrap;gap:4px 16px;align-items:baseline;justify-content:space-between;
+}
+.tcx-foot-logo{font-weight:700;font-size:15px;letter-spacing:.3px;}
+.tcx-foot-tag{font-size:12.5px;opacity:.85;}
+
+/* ---------- Responsive ---------- */
+@media (max-width:680px){
+  .tcx{margin:16px;border-radius:6px;}
+  .tcx-head{padding:22px 20px;}
+  .tcx-h2{font-size:22px;}
+  .tcx-badge{border-left:none;padding-left:0;text-align:left;}
+  .tcx-progress{padding:16px 20px 0;}
+  .tcx-body{padding:22px 20px 26px;}
+  .tcx-cards{grid-template-columns:1fr;}
+  .tcx-row-2{grid-template-columns:1fr;}
+  .tcx-form{padding:18px;}
+  .tcx-lbl{display:none;}
+  .tcx-steps li{flex:0 0 auto;}
+  .tcx-nav .tcx-btn{flex:1 1 100%;}
+  .tcx-again-sep{display:none;}
+  .tcx-foot{padding:14px 20px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .tcx *,.tcx *::before,.tcx *::after{animation:none!important;transition:none!important;}
+}
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ======================================================================
+     0. HJÆLPEFUNKTIONER
+     ====================================================================== */
+  var root = document.getElementById('tcx');
+  if (!root || root.dataset.tcInit === '1') { return; }
+  root.dataset.tcInit = '1';
+
+  var $  = function (sel, ctx) { return (ctx || root).querySelector(sel); };
+  var $$ = function (sel, ctx) { return Array.prototype.slice.call((ctx || root).querySelectorAll(sel)); };
+
+  var kr = function (n) {
+    return new Intl.NumberFormat('da-DK', { maximumFractionDigits: 0 }).format(Math.round(n)) + ' kr.';
+  };
+  var num = function (n, dec) {
+    return new Intl.NumberFormat('da-DK', { maximumFractionDigits: dec || 0 }).format(n);
+  };
+  var roundTo = function (n, step) { return Math.round(n / step) * step; };
+  var tlfPen = function (t) {
+    var c = String(t || '').replace(/[^0-9+]/g, '');
+    return /^[0-9]{8}$/.test(c) ? c.replace(/(\d{2})(?=\d)/g, '$1 ').trim() : String(t || '');
+  };
+  var ceil = Math.ceil;
+
+  /* ======================================================================
+     1. PRISMODEL
+     Erfaringspriser, ekskl. moms. Justér tallene her – resten regner selv.
+     ====================================================================== */
+  var P = {
+    nedbrydning: {
+      m2: { villa: 475, erhverv: 395 },
+      miljo: { risiko: 185, foer1950: 95, nyere: 35 },
+      fundament: 140,
+      etablering: 12500,
+      min: 25000
+    },
+    anlaeg: {
+      enhed: { kloak: 1450, jord: 285 },
+      jordtillaeg: {
+        kloak: { sand: 0, ler: 165, fyld: 95, forurenet: 520 },
+        jord:  { sand: 0, ler: 145, fyld: 95, forurenet: 410 }
+      },
+      traangTillaeg: 0.18,
+      etablering: 9500,
+      min: 15000
+    },
+    transport: {
+      ton: { sand: 145, stabil: 165, skaerver: 285, muld: 195, bund: 135 },
+      bigbagPrTon: 275,
+      kapacitet: { bigbag: 12, loes: 15 },
+      zoner: {
+        A: { pris: 750,  navn: 'Zone A – Haderslev og nærområde' },
+        B: { pris: 1250, navn: 'Zone B – Trekantområdet / Sønderjylland' },
+        C: { pris: 1950, navn: 'Zone C – Øvrige Jylland og Fyn' },
+        D: { pris: 2950, navn: 'Zone D – Øst for Lillebælt' }
+      },
+      min: 1200
+    },
+    affald: {
+      ton: { blandet: 1450, beton: 165, trae: 495, have: 395, jord: 145 },
+      usorteretTillaeg: 0.20,
+      sorteretRabat: 0.12,
+      containerPris: 1850,
+      containerTon: 8,
+      min: 950
+    }
+  };
+
+  var zoneFor = function (postnr) {
+    var p = parseInt(postnr, 10);
+    if (!p || p < 1000 || p > 9990) { return null; }
+    if (p >= 6000 && p <= 6499) { return 'A'; }
+    if ((p >= 6500 && p <= 6999) || (p >= 7000 && p <= 7199)) { return 'B'; }
+    if ((p >= 5000 && p <= 5999) || (p >= 7200 && p <= 9990)) { return 'C'; }
+    return 'D';
+  };
+
+  /* ======================================================================
+     2. IKONER
+     ====================================================================== */
+  var ICON = {
+    nedbrydning: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/><path d="m2 6 4 2"/><path d="m21 4-3 3"/></svg>',
+    anlaeg:      '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 20v-5l4-6 5 3"/><path d="m13 6 4-2 3 5-4 2z"/><circle cx="6" cy="20" r="1.6"/><path d="M10 15h7"/></svg>',
+    transport:   '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 17V8h11v9"/><path d="M13 11h4l4 3.5V17h-8"/><circle cx="7" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/><path d="M9 18h6.5"/></svg>',
+    affald:      '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M5 7l1.2 12.1A2 2 0 0 0 8.2 21h7.6a2 2 0 0 0 2-1.9L19 7"/><path d="M10 11v6M14 11v6"/></svg>'
+  };
+
+  /* ======================================================================
+     3. TRACKS – spørgsmål, beregning, indsigter og PDF-tips
+     ====================================================================== */
+  var TRACKS = {
+
+    /* ---------------------------------------------------------------- */
+    nedbrydning: {
+      title: 'Nedbrydning & Miljøsanering',
+      desc: 'Total- og selektiv nedrivning, asbest, PCB og bly.',
+      icon: ICON.nedbrydning,
+      step2Title: 'Fortæl om bygningen der skal rives ned',
+      step2Sub: 'Vi bruger oplysningerne til at estimere både nedrivning, miljøhåndtering og bortskaffelse.',
+      fields: [
+        { key: 'ejendomstype', type: 'choice', label: 'Hvilken type bygning drejer det sig om?',
+          options: [
+            { v: 'villa',   l: 'Villa / parcelhus', s: 'Bolig, garage, udhus, carport' },
+            { v: 'erhverv', l: 'Erhverv / industri', s: 'Hal, lager, stald, produktion' }
+          ] },
+        { key: 'm2', type: 'number', label: 'Hvor stort er bygningsarealet?',
+          help: 'Samlet bebygget areal i kvadratmeter – ca.-tal er fint.',
+          unit: 'm²', min: 10, max: 25000, placeholder: 'F.eks. 140' },
+        { key: 'byggeaar', type: 'number', label: 'Hvornår er bygningen opført?',
+          help: 'Byggeåret afgør, hvor omfattende miljøsaneringen typisk bliver.',
+          unit: 'årstal', min: 1800, max: 2026, placeholder: 'F.eks. 1972' },
+        { key: 'fundament', type: 'choice', label: 'Skal fundament og sokkel også fjernes?',
+          options: [
+            { v: 'ja',  l: 'Ja, alt skal væk', s: 'Inkl. terrændæk og sokkel' },
+            { v: 'nej', l: 'Nej, kun over terræn', s: 'Fundamentet bliver liggende' }
+          ] }
+      ],
+      calc: function (a) {
+        var m2 = a.m2, y = a.byggeaar, lines = [];
+        var base = m2 * P.nedbrydning.m2[a.ejendomstype];
+        lines.push({ l: 'Nedrivning ' + (a.ejendomstype === 'villa' ? 'af villa/parcelhus' : 'af erhvervsbygning'),
+                     s: num(m2) + ' m² × ' + kr(P.nedbrydning.m2[a.ejendomstype]) + '/m²', v: base });
+
+        var mSats, mTxt;
+        if (y >= 1950 && y <= 1990) { mSats = P.nedbrydning.miljo.risiko; mTxt = 'Miljøsanering – asbest, PCB og bly (risikoperiode)'; }
+        else if (y < 1950)          { mSats = P.nedbrydning.miljo.foer1950; mTxt = 'Miljøsanering – bly og PCB i ældre byggeri'; }
+        else                        { mSats = P.nedbrydning.miljo.nyere; mTxt = 'Lovpligtig miljøscreening og kortlægning'; }
+        lines.push({ l: mTxt, s: num(m2) + ' m² × ' + kr(mSats) + '/m²', v: m2 * mSats });
+
+        if (a.fundament === 'ja') {
+          lines.push({ l: 'Fjernelse af fundament, sokkel og terrændæk', s: num(m2) + ' m² × ' + kr(P.nedbrydning.fundament) + '/m²', v: m2 * P.nedbrydning.fundament });
+        }
+        lines.push({ l: 'Opstart, afspærring og maskinetablering', s: 'Fast beløb', v: P.nedbrydning.etablering });
+
+        var sum = lines.reduce(function (t, x) { return t + x.v; }, 0);
+        return { lines: lines, total: Math.max(sum, P.nedbrydning.min) };
+      },
+      insights: [
+        { id: 'asbest', when: function (a) { return a.byggeaar >= 1950 && a.byggeaar <= 1990; },
+          t: 'Vidste du? Bygninger fra denne periode indeholder ofte asbest i eternittag, lofter og fugemasse – og PCB i vinduer. Materialerne skal kortlægges og saneres af certificeret personale, før selve nedrivningen må gå i gang. Vi har egne uddannede folk til opgaven, så du kun har én leverandør.' },
+        { id: 'stor', when: function (a) { return a.m2 >= 400; },
+          t: 'Ved større nedrivninger kan vi som regel nedknuse betonen på stedet og genindbygge den som stabilt bærelag. Det sparer både lastbilkørsel og deponiafgift – ofte 10–20 % af den samlede pris.' },
+        { id: 'erhverv', when: function (a) { return a.ejendomstype === 'erhverv'; },
+          t: 'Erhvervs- og landbrugsbygninger kræver nedrivningsanmeldelse og miljøkortlægning hos kommunen, før arbejdet må starte. Vi står for anmeldelsen og dialogen med myndighederne som en del af opgaven.' },
+        { id: 'fundament', when: function (a) { return a.fundament === 'ja'; },
+          t: 'Husk at kloak- og forsyningsstik skal afproppes korrekt, når fundamentet fjernes. Det er en lille post nu – men en dyr overraskelse, hvis det opdages under et senere byggeri.' }
+      ],
+      tips: function (a) {
+        var t = [];
+        if (a.byggeaar >= 1950 && a.byggeaar <= 1990) {
+          t.push({ h: '1. Få miljøkortlægningen på plads først',
+            b: 'Din bygning er opført i ' + a.byggeaar + ' og ligger dermed i den periode, hvor asbest, PCB og blyholdig maling var almindeligt anvendt. Loven kræver en miljøkortlægning, før nedrivningen påbegyndes. Får du den lavet tidligt, kender du det reelle omfang – og undgår stop midt i projektet, som er den hyppigste årsag til budgetoverskridelser på nedrivningsopgaver.' });
+        } else if (a.byggeaar < 1950) {
+          t.push({ h: '1. Ældre byggeri gemmer ofte på bly og tjære',
+            b: 'Bygninger fra før 1950 indeholder sjældent asbest i pladematerialer, men til gengæld ofte blyholdig maling, tjærepap og gamle installationer. En screening før opstart koster typisk under 1 % af projektsummen og fjerner den største usikkerhed i budgettet.' });
+        } else {
+          t.push({ h: '1. Miljøscreening er lovpligtig – også på nyere byggeri',
+            b: 'Selvom bygningen er opført i ' + a.byggeaar + ', skal der stadig laves en screening for miljøfarlige stoffer, når der nedrives mere end 10 m² eller frembringes mere end 1 ton affald. Vi indarbejder screeningen i tilbuddet, så du ikke får en ekstraregning undervejs.' });
+        }
+        t.push({ h: '2. Genanvend materialerne på din egen grund',
+          b: 'Beton og tegl fra nedrivningen kan i mange tilfælde knuses på pladsen og genindbygges som bærelag under ny belægning eller indkørsel. Du sparer både kørsel, deponiafgift og køb af nye materialer. På en opgave af denne størrelse (' + num(a.m2) + ' m²) er der typisk et reelt besparelsespotentiale.' });
+        t.push({ h: '3. Tænk tidsplan og adgangsforhold ind fra start',
+          b: 'Prisen på nedrivning afhænger i høj grad af, hvor let maskinerne kan komme til, og om arbejdet kan køre uafbrudt. Kan vi arbejde i én sammenhængende periode – frem for i etaper omkring anden håndværkeraktivitet – bliver opgaven både hurtigere og billigere.' });
+        return t;
+      }
+    },
+
+    /* ---------------------------------------------------------------- */
+    anlaeg: {
+      title: 'Anlægsarbejde',
+      desc: 'Kloak, byggemodning, jordarbejde og udgravning.',
+      icon: ICON.anlaeg,
+      step2Title: 'Fortæl om anlægsopgaven',
+      step2Sub: 'Jordtype og adgangsforhold har stor betydning for prisen – derfor spørger vi ind til dem.',
+      fields: [
+        { key: 'opgavetype', type: 'choice', label: 'Hvilken type anlægsarbejde?',
+          options: [
+            { v: 'kloak', l: 'Kloak & afløb', s: 'Nyanlæg, omlægning, separering' },
+            { v: 'jord',  l: 'Jordarbejde & udgravning', s: 'Byggegrube, afgravning, terræn' }
+          ] },
+        { key: 'maengde', type: 'number', label: 'Hvor stort er omfanget?',
+          dynLabel: function (a) { return a.opgavetype === 'kloak' ? 'Hvor mange løbende meter ledning?' : 'Hvor mange kubikmeter jord?'; },
+          dynHelp:  function (a) { return a.opgavetype === 'kloak' ? 'Samlet længde af den ledning der skal graves og lægges.' : 'Anslået mængde jord der skal afgraves og håndteres.'; },
+          dynUnit:  function (a) { return a.opgavetype === 'kloak' ? 'lbm' : 'm³'; },
+          unit: 'enheder', min: 1, max: 100000, placeholder: 'F.eks. 60' },
+        { key: 'jordtype', type: 'choice', label: 'Hvilken jordtype er der på grunden?',
+          help: 'Er du i tvivl, så vælg det du forventer – vi justerer efter besigtigelse.',
+          options: [
+            { v: 'sand',      l: 'Sand / grus', s: 'Let at grave, kan genindbygges' },
+            { v: 'ler',       l: 'Ler', s: 'Tungt, klæbende, dårlig bæreevne' },
+            { v: 'fyld',      l: 'Fyldjord / blandet', s: 'Tidligere opfyldt areal' },
+            { v: 'forurenet', l: 'Forurenet jord (kl. 2–3)', s: 'Kortlagt eller mistanke' }
+          ] },
+        { key: 'adgang', type: 'choice', label: 'Hvordan er adgangsforholdene?',
+          options: [
+            { v: 'god',    l: 'God adgang', s: 'Plads til gravemaskine og lastbil' },
+            { v: 'traang', l: 'Trange forhold', s: 'Bykerne, smal indkørsel, tæt bebyggelse' }
+          ] }
+      ],
+      calc: function (a) {
+        var lines = [], q = a.maengde, erKloak = a.opgavetype === 'kloak';
+        var enhed = erKloak ? 'lbm' : 'm³';
+        var sats = P.anlaeg.enhed[a.opgavetype];
+        var base = q * sats;
+        lines.push({ l: erKloak ? 'Kloakarbejde inkl. opgravning, rør og retablering' : 'Jordarbejde inkl. afgravning og håndtering',
+                     s: num(q) + ' ' + enhed + ' × ' + kr(sats) + '/' + enhed, v: base });
+
+        var jt = P.anlaeg.jordtillaeg[a.opgavetype][a.jordtype];
+        var jtNavn = { sand: 'Sand/grus', ler: 'Ler', fyld: 'Fyldjord', forurenet: 'Forurenet jord (kl. 2–3)' }[a.jordtype];
+        var jordSum = q * jt;
+        if (jt > 0) {
+          lines.push({ l: 'Tillæg for jordtype: ' + jtNavn + (a.jordtype === 'forurenet' ? ' – anmeldelse og godkendt modtageanlæg' : ' – håndtering og bortskaffelse'),
+                       s: num(q) + ' ' + enhed + ' × ' + kr(jt) + '/' + enhed, v: jordSum });
+        } else {
+          lines.push({ l: 'Tillæg for jordtype: ' + jtNavn, s: 'Kan normalt genindbygges på stedet', v: 0 });
+        }
+
+        var traangSum = 0;
+        if (a.adgang === 'traang') {
+          traangSum = (base + jordSum) * P.anlaeg.traangTillaeg;
+          lines.push({ l: 'Tillæg for trange adgangsforhold', s: 'Mindre maskiner og øget tidsforbrug (+' + Math.round(P.anlaeg.traangTillaeg * 100) + ' %)', v: traangSum });
+        }
+        lines.push({ l: 'Etablering af plads, afspærring og opmåling', s: 'Fast beløb', v: P.anlaeg.etablering });
+
+        var sum = lines.reduce(function (t, x) { return t + x.v; }, 0);
+        return { lines: lines, total: Math.max(sum, P.anlaeg.min) };
+      },
+      insights: [
+        { id: 'ler', when: function (a) { return a.jordtype === 'ler'; },
+          t: 'Bortskaffelse af lerjord er dyrt – både i kørsel og i modtagegebyr. Overvej genindbygning: ler kan ofte bruges til terrænregulering, støjvolde eller opfyld andre steder på grunden. Vi kigger altid på, hvad der kan blive liggende, før vi kører noget væk.' },
+        { id: 'forurenet', when: function (a) { return a.jordtype === 'forurenet'; },
+          t: 'Forurenet jord skal anmeldes til kommunen mindst 4 uger før flytning og køres til godkendt modtageanlæg. Vi udarbejder jordflytningsanmeldelsen og sørger for analyser og dokumentation, så du har papirerne i orden – også over for en fremtidig køber.' },
+        { id: 'kloak', when: function (a) { return a.opgavetype === 'kloak'; },
+          t: 'Alt kloakarbejde skal udføres af en autoriseret kloakmester. Vi har egne autoriserede folk, som både udfører arbejdet og leverer den lovpligtige dokumentation og tv-inspektion – du skal altså ikke koordinere flere leverandører.' },
+        { id: 'traang', when: function (a) { return a.adgang === 'traang'; },
+          t: 'Ved trange forhold bruger vi minigravere og mindre materiel. Det gør arbejdet mere skånsomt for belægning og beplantning, men regn med et lidt større tidsforbrug – det er indregnet i dit estimat.' },
+        { id: 'stormaengde', when: function (a) { return a.opgavetype === 'jord' && a.maengde >= 500; },
+          t: 'Ved mængder over 500 m³ kan det betale sig at få lavet en jordbalance, før arbejdet starter. Kan afgravet jord genanvendes andre steder på matriklen, forsvinder en stor del af kørsels- og deponiudgiften.' }
+      ],
+      tips: function (a) {
+        var t = [], erKloak = a.opgavetype === 'kloak', enhed = erKloak ? 'løbende meter' : 'm³';
+        if (a.jordtype === 'ler') {
+          t.push({ h: '1. Undgå at køre lerjorden væk',
+            b: 'Ler er en af de dyreste jordtyper at komme af med, fordi den er tung og vanskelig at genanvende hos modtageanlæggene. Kan leret i stedet bruges til terrænregulering, volde eller opfyld på din egen matrikel, forsvinder både kørsels- og modtageudgiften. Det er som regel den enkeltbeslutning, der flytter mest på prisen.' });
+        } else if (a.jordtype === 'forurenet') {
+          t.push({ h: '1. Få anmeldelsen ind i god tid',
+            b: 'Flytning af forurenet jord skal anmeldes til kommunen, og sagsbehandlingen kan tage op til fire uger. Starter anmeldelsen samtidig med projekteringen, undgår du ventetid på en byggeplads, hvor maskinerne allerede står klar. Vi står for anmeldelse, analyser og dokumentation.' });
+        } else {
+          t.push({ h: '1. Lav en jordbalance før første spadestik',
+            b: 'Med ' + num(a.maengde) + ' ' + enhed + ' i projektet er der god økonomi i at planlægge, hvor jorden skal hen. Kan den afgravede jord genindbygges på grunden, sparer du både bortkørsel og indkøb af nye materialer.' });
+        }
+        if (erKloak) {
+          t.push({ h: '2. Kombinér gravearbejdet med andre installationer',
+            b: 'Når graveren alligevel er i jorden, koster det næsten ingenting at lægge tomrør til el, fiber eller vand i samme rende. At skulle grave op igen om to år koster det fulde beløb en gang til.' });
+        } else {
+          t.push({ h: '2. Tænk afvanding ind fra start',
+            b: 'Utilstrækkelig afvanding er den hyppigste årsag til sætningsskader efter et jordarbejde. Et par ekstra meter dræn eller en faskine i forbindelse med udgravningen er langt billigere end en udbedring senere.' });
+        }
+        t.push({ h: '3. Adgangsforholdene afgør maskinvalget',
+          b: a.adgang === 'traang'
+            ? 'Du har angivet trange forhold. Kan der ryddes plads til større materiel – f.eks. ved at fjerne et hegn midlertidigt eller aftale brug af naboarealet – kan opgaven ofte udføres væsentligt hurtigere og dermed billigere.'
+            : 'Du har god adgang, og det er en klar fordel. Sørg for, at der også er plads til oplag af materialer og til at lastbiler kan vende – det holder maskintimerne nede.' });
+        return t;
+      }
+    },
+
+    /* ---------------------------------------------------------------- */
+    transport: {
+      title: 'Transport & Materialer',
+      desc: 'Sand, grus, stabilgrus og muld – leveret hos dig.',
+      icon: ICON.transport,
+      step2Title: 'Hvad skal vi levere – og hvorhen?',
+      step2Sub: 'Vi leverer i bigbags eller løst med tip- og kranbil fra vores plads på Oksbølvej i Haderslev.',
+      fields: [
+        { key: 'materiale', type: 'choice', label: 'Hvilket materiale har du brug for?',
+          options: [
+            { v: 'sand',     l: 'Vasket sand 0–4', s: 'Til fugning, sandkasse, afretning' },
+            { v: 'stabil',   l: 'Stabilgrus 0–32', s: 'Bærelag under fliser og indkørsel' },
+            { v: 'bund',     l: 'Bundsikringsgrus 0–64', s: 'Nederste bærelag, opbygning' },
+            { v: 'skaerver', l: 'Skærver 8–16', s: 'Dræn, indkørsel, dekoration' },
+            { v: 'muld',     l: 'Muldjord', s: 'Nyt græs, bede, terrænregulering' }
+          ] },
+        { key: 'levering', type: 'choice', label: 'Hvordan skal materialet leveres?',
+          options: [
+            { v: 'bigbag', l: 'Bigbags (1.000 kg)', s: 'Aflæsses med kran – nemt ved lidt plads' },
+            { v: 'loes',   l: 'Løs levering', s: 'Tip- eller grabbil – billigst ved store mængder' }
+          ] },
+        { key: 'maengde', type: 'number', label: 'Hvor mange tons skal du bruge?',
+          help: '1 ton fylder ca. 0,6–0,7 m³. Er du i tvivl, hjælper vi gerne med at regne det ud.',
+          unit: 'tons', min: 1, max: 2000, step: 1, placeholder: 'F.eks. 8' },
+        { key: 'postnr', type: 'text', label: 'Hvor skal det leveres?',
+          help: 'Indtast postnummeret på leveringsadressen – det afgør fragtzonen.',
+          unit: 'postnr.', maxlength: 4, inputmode: 'numeric', placeholder: 'F.eks. 6100' }
+      ],
+      calc: function (a) {
+        var lines = [], tons = a.maengde;
+        var mNavn = { sand: 'Vasket sand 0–4', stabil: 'Stabilgrus 0–32', bund: 'Bundsikringsgrus 0–64', skaerver: 'Skærver 8–16', muld: 'Muldjord' }[a.materiale];
+        var sats = P.transport.ton[a.materiale];
+        lines.push({ l: mNavn, s: num(tons) + ' tons × ' + kr(sats) + '/ton', v: tons * sats });
+
+        if (a.levering === 'bigbag') {
+          lines.push({ l: 'Bigbags inkl. emballage og kranaflæsning', s: num(ceil(tons)) + ' stk. à ' + kr(P.transport.bigbagPrTon), v: ceil(tons) * P.transport.bigbagPrTon });
+        }
+        var kap = P.transport.kapacitet[a.levering];
+        var laes = Math.max(1, ceil(tons / kap));
+        var z = P.transport.zoner[zoneFor(a.postnr)];
+        lines.push({ l: 'Fragt – ' + z.navn, s: num(laes) + ' læs à ' + kr(z.pris) + ' (' + kap + ' tons pr. læs)', v: laes * z.pris });
+
+        var sum = lines.reduce(function (t, x) { return t + x.v; }, 0);
+        return { lines: lines, total: Math.max(sum, P.transport.min) };
+      },
+      insights: [
+        { id: 'bigbag5', when: function (a) { return a.levering === 'bigbag' && a.maengde > 5; },
+          t: 'Pro-tip: Ved over 5 tons er løs levering med grab billigere end bigbags. Du betaler hverken for emballage eller for håndtering af hver enkelt sæk – og vi kan lægge materialet præcis der, hvor det skal bruges. Skift til "Løs levering" ovenfor og se forskellen.' },
+        { id: 'stor', when: function (a) { return a.maengde >= 25; },
+          t: 'Ved mængder over 25 tons kan vi ofte køre direkte fra grusgrav til din adresse uden omlæsning på vores plads. Det giver færre håndteringer og en lavere pris pr. ton – ring til os på 74 52 47 23, så regner vi på det.' },
+        { id: 'zoneD', when: function (a) { return zoneFor(a.postnr) === 'D'; },
+          t: 'Vores kerneområde er Syd- og Sønderjylland. Vi leverer gerne øst for Lillebælt, men her indhenter vi et konkret fragttilbud, så du ikke betaler for mere kørsel end nødvendigt. Estimatet herunder er et forsigtigt skøn.' },
+        { id: 'zoneA', when: function (a) { return zoneFor(a.postnr) === 'A'; },
+          t: 'Du ligger i vores nærområde omkring Haderslev. Her kan vi som regel levere inden for få hverdage – og ved akutte opgaver ofte samme uge. Du er også velkommen til at hente selv på Oksbølvej 14.' },
+        { id: 'muld', when: function (a) { return a.materiale === 'muld'; },
+          t: 'Muldjord bør leveres og udlægges i tørvejr. Våd muld pakker sammen og mister sin struktur, og så får græsset svært ved at etablere sig. Vi anbefaler 10–15 cm muld ved nyanlæg af græs.' },
+        { id: 'skaerver', when: function (a) { return a.materiale === 'skaerver'; },
+          t: 'Skærver 8–16 er velegnet til dræn og indkørsler, men skal ligge på et bærelag af stabilgrus for ikke at synke. Husk at bestille begge dele i samme leverance – så sparer du et helt fragtlæs.' }
+      ],
+      tips: function (a) {
+        var t = [], z = zoneFor(a.postnr), kap = P.transport.kapacitet[a.levering];
+        var laes = Math.max(1, ceil(a.maengde / kap));
+        if (a.levering === 'bigbag' && a.maengde > 5) {
+          t.push({ h: '1. Vælg løs levering frem for bigbags',
+            b: 'Du har bestilt ' + num(a.maengde) + ' tons i bigbags. Over ca. 5 tons er løs levering med tip- eller grabbil billigere, fordi du undgår at betale for emballage og for håndtering af hver enkelt sæk. Er der plads til, at bilen kan tippe eller grabbe materialet af, er det næsten altid den bedste løsning.' });
+        } else if (a.levering === 'bigbag') {
+          t.push({ h: '1. Bigbags er det rigtige valg ved små mængder',
+            b: 'Ved ' + num(a.maengde) + ' tons giver bigbags god mening: materialet holdes samlet og tørt, og kranbilen kan sætte sækkene præcis, hvor du vil have dem – også over et hegn eller en hæk. Sørg for et plant underlag, hvor bilen kan komme til.' });
+        } else {
+          t.push({ h: '1. Sørg for plads til aflæsning',
+            b: 'Løs levering kræver, at lastbilen kan komme til og tippe eller grabbe af. Med ' + num(a.maengde) + ' tons bliver det ' + num(laes) + ' læs. Aftal på forhånd, hvor materialet skal placeres – det sparer dig for at skulle flytte det med trillebør bagefter.' });
+        }
+        t.push({ h: '2. Bestil hele mængden på én gang',
+          b: 'Fragten udgør en fast udgift pr. læs, uanset hvor meget der er på bilen. Bestiller du 8 tons nu og 4 tons om en uge, betaler du fragten to gange. Regn derfor mængden grundigt igennem – og læg hellere 10 % til end at komme til kort.' });
+        t.push({ h: '3. Levering og afhentning i ' + (z === 'A' ? 'dit nærområde' : 'dit område'),
+          b: z === 'A'
+            ? 'Postnummer ' + a.postnr + ' ligger i vores nærområde. Du kan også selv hente materialet på Oksbølvej 14 i Haderslev – pladsen har åbent man–tors 07.00–16.00, fre 07.00–14.00 og lør 08.00–13.00 (selvbetjening).'
+            : 'Postnummer ' + a.postnr + ' ligger uden for vores nærmeste leveringszone, og fragten fylder derfor mere i den samlede pris. Kan leverancen samles med andre kørsler i området, kan vi ofte gøre det billigere – ring og hør nærmere.' });
+        return t;
+      }
+    },
+
+    /* ---------------------------------------------------------------- */
+    affald: {
+      title: 'Genbrugsplads & Affald',
+      desc: 'Containere, sortering og modtagelse af byggeaffald.',
+      icon: ICON.affald,
+      step2Title: 'Fortæl om affaldet',
+      step2Sub: 'Sortering er den enkeltfaktor, der flytter mest på prisen på affaldshåndtering.',
+      fields: [
+        { key: 'affaldstype', type: 'choice', label: 'Hvilken type affald drejer det sig om?',
+          options: [
+            { v: 'blandet', l: 'Blandet erhvervsaffald', s: 'Usorteret bygge- og nedrivningsaffald' },
+            { v: 'beton',   l: 'Beton & tegl', s: 'Rent, uden armering og gips' },
+            { v: 'trae',    l: 'Rent træ', s: 'Ubehandlet og malet træ' },
+            { v: 'have',    l: 'Have- & parkaffald', s: 'Grene, stød, afklip' },
+            { v: 'jord',    l: 'Ren jord (klasse 1)', s: 'Dokumenteret uforurenet' }
+          ] },
+        { key: 'maengde', type: 'number', label: 'Hvor store mængder er der tale om?',
+          help: 'Anslået vægt i tons. En fyldt 8 m³ container vejer typisk 2–4 tons.',
+          unit: 'tons', min: 1, max: 5000, placeholder: 'F.eks. 6' },
+        { key: 'sortering', type: 'choice', label: 'Er der plads til at sortere på pladsen?',
+          help: 'Altså plads til at stille mere end én container eller flere bunker.',
+          options: [
+            { v: 'ja',  l: 'Ja, der er plads', s: 'Vi kan sortere i fraktioner' },
+            { v: 'nej', l: 'Nej, alt i én container', s: 'Trang plads eller kort tidsfrist' }
+          ] },
+        { key: 'haandtering', type: 'choice', label: 'Hvordan skal affaldet håndteres?',
+          options: [
+            { v: 'container', l: 'I stiller container', s: 'Vi leverer, henter og bortskaffer' },
+            { v: 'selv',      l: 'Vi kører selv ind', s: 'Aflevering på Oksbølvej 14' }
+          ] }
+      ],
+      calc: function (a) {
+        var lines = [], tons = a.maengde;
+        var navn = { blandet: 'Blandet erhvervsaffald', beton: 'Beton & tegl', trae: 'Rent træ', have: 'Have- & parkaffald', jord: 'Ren jord (klasse 1)' }[a.affaldstype];
+        var sats = P.affald.ton[a.affaldstype];
+        var grund = tons * sats;
+        lines.push({ l: 'Modtagelse og behandling – ' + navn, s: num(tons) + ' tons × ' + kr(sats) + '/ton', v: grund });
+
+        if (a.affaldstype === 'blandet') {
+          if (a.sortering === 'nej') {
+            lines.push({ l: 'Tillæg for usorteret levering', s: 'Efterfølgende sortering på anlæg (+' + Math.round(P.affald.usorteretTillaeg * 100) + ' %)', v: grund * P.affald.usorteretTillaeg });
+          } else {
+            lines.push({ l: 'Rabat ved kildesortering på pladsen', s: 'Sortering i fraktioner (−' + Math.round(P.affald.sorteretRabat * 100) + ' %)', v: -grund * P.affald.sorteretRabat });
+          }
+        }
+        if (a.haandtering === 'container') {
+          var antal = Math.max(1, ceil(tons / P.affald.containerTon));
+          lines.push({ l: 'Container inkl. levering, afhentning og leje', s: num(antal) + ' × ' + kr(P.affald.containerPris) + ' (ca. ' + P.affald.containerTon + ' tons pr. container)', v: antal * P.affald.containerPris });
+        } else {
+          lines.push({ l: 'Egen aflevering på Oksbølvej 14, Haderslev', s: 'Ingen udgift til container og kørsel', v: 0 });
+        }
+
+        var sum = lines.reduce(function (t, x) { return t + x.v; }, 0);
+        return { lines: lines, total: Math.max(sum, P.affald.min) };
+      },
+      insights: [
+        { id: 'blandet', when: function (a) { return a.affaldstype === 'blandet'; },
+          t: 'Kildesortering på pladsen kan sænke jeres omkostninger markant. Blandet erhvervsaffald er den dyreste fraktion – ofte 5–8 gange dyrere pr. ton end ren beton eller rent træ. Alt hvad I sorterer fra på stedet, går direkte på bundlinjen.' },
+        { id: 'usorteret', when: function (a) { return a.sortering === 'nej' && a.affaldstype === 'blandet'; },
+          t: 'Uden plads til flere containere ender også de billige fraktioner i den dyreste. Ofte kan det lade sig gøre at køre med to containere skiftevis – f.eks. én til beton og én til rest – uden at det fylder mere på pladsen. Det taler vi gerne med jer om.' },
+        { id: 'beton', when: function (a) { return a.affaldstype === 'beton'; },
+          t: 'Ren beton og tegl er en ressource, ikke affald. Vi nedknuser det til genbrugsstabil, som kan bruges igen som bærelag. Derfor er prisen pr. ton lav – forudsat at der ikke er gips, træ eller armering iblandet.' },
+        { id: 'jord', when: function (a) { return a.affaldstype === 'jord'; },
+          t: 'Ren jord i klasse 1 modtages billigt, men kræver dokumentation. Har du ikke en analyse, kan vi få den lavet – det er væsentligt billigere end at få hele læsset klassificeret som forurenet ved ankomsten.' },
+        { id: 'selv', when: function (a) { return a.haandtering === 'selv'; },
+          t: 'Vores plads på Oksbølvej 14 i Haderslev har åbent man–tors 07.00–16.00 og fredag 07.00–14.00. Lørdag 08.00–13.00 er der udelukkende selvbetjening. Husk at læsset skal være sorteret ved ankomst.' },
+        { id: 'stor', when: function (a) { return a.maengde >= 20; },
+          t: 'Ved mængder over 20 tons laver vi gerne en fast aftale med løbende containerskift. Det giver en lavere tonpris, og I slipper for at bestille forfra hver gang – ring på 74 52 47 23.' }
+      ],
+      tips: function (a) {
+        var t = [];
+        if (a.affaldstype === 'blandet' && a.sortering === 'nej') {
+          t.push({ h: '1. Find plads til bare én container mere',
+            b: 'Blandet erhvervsaffald afregnes til den højeste tonpris, fordi det skal sorteres manuelt bagefter. Med ' + num(a.maengde) + ' tons er der reel økonomi i at stille bare én ekstra container til rent træ eller beton. Erfaringsmæssigt kan 30–50 % af et byggeaffald flyttes til en billigere fraktion – uden at det koster ekstra arbejdstid af betydning.' });
+        } else if (a.affaldstype === 'blandet') {
+          t.push({ h: '1. Hold fraktionerne rene hele vejen',
+            b: 'I har plads til at sortere, og det er den rigtige beslutning. Vær opmærksom på, at én sæk gips eller et stykke imprægneret træ kan nedklassificere en hel container beton til blandet affald. Skilte ved containerne og en kort instruktion til folkene på pladsen er som regel nok.' });
+        } else {
+          t.push({ h: '1. Hold læsset rent – det er hele forskellen',
+            b: 'I afleverer en ren fraktion, og prisen afspejler det. Bliver læsset blandet op undervejs – med gips, plast eller imprægneret træ – omklassificeres det ved indvejning til blandet affald til væsentligt højere tonpris. Det er den hyppigste årsag til en uventet regning.' });
+        }
+        t.push({ h: '2. Vej mængden realistisk',
+          b: 'En fyldt 8 m³ container vejer typisk 2–4 tons afhængigt af materialet – beton vejer langt mere end træ. Du har angivet ' + num(a.maengde) + ' tons. Er du usikker, så tag udgangspunkt i antal containere frem for vægt, når du bestiller, så finder vi det rigtige sammen.' });
+        t.push({ h: '3. Overvej afhentning kontra egen aflevering',
+          b: a.haandtering === 'container'
+            ? 'I har valgt container. Det koster mere end at køre selv, men sparer jer for både kørsel og arbejdstimer – og containeren kan stå, mens arbejdet skrider frem. Ved længere projekter aftaler vi gerne fast containerskift.'
+            : 'I kører selv ind på Oksbølvej 14 i Haderslev og sparer container- og kørselsudgiften. Husk åbningstiderne: man–tors 07.00–16.00, fre 07.00–14.00, lør 08.00–13.00 (selvbetjening). Læsset skal være sorteret ved ankomst.' });
+        return t;
+      }
+    }
+  };
+
+  /* ======================================================================
+     4. STATE
+     ====================================================================== */
+  var state = { step: 1, track: null, answers: {}, lead: {}, result: null };
+
+  var els = {
+    body: $('#tcxBody'), cards: $('#tcxCards'), fields: $('#tcxFields'),
+    insights: $('#tcxInsights'), insightsResult: $('#tcxInsightsResult'),
+    barFill: $('#tcxBarFill'), steps: $$('#tcxSteps li'),
+    s2Title: $('#tcxStep2Title'), s2Sub: $('#tcxStep2Sub'), s2Err: $('#tcxStep2Err'),
+    form: $('#tcxForm'), price: $('#tcxPrice'), table: $('#tcxTable').tBodies[0],
+    summary: $('#tcxSummary'), pdfNote: $('#tcxPdfNote'), pdfBtn: $('#tcxPdf'),
+    resultEyebrow: $('#tcxResultEyebrow')
+  };
+
+  /* ======================================================================
+     5. NAVIGATION
+     ====================================================================== */
+  function goTo(step) {
+    state.step = step;
+    $$('.tcx-step').forEach(function (s) {
+      s.classList.toggle('is-active', Number(s.dataset.step) === step);
+    });
+    els.barFill.style.width = (step * 25) + '%';
+    els.steps.forEach(function (li) {
+      var n = Number(li.dataset.step);
+      li.classList.toggle('is-current', n === step);
+      li.classList.toggle('is-done', n < step);
+    });
+    var top = root.getBoundingClientRect().top + window.pageYOffset - 24;
+    if (window.pageYOffset > top) { window.scrollTo({ top: top, behavior: 'smooth' }); }
+    var focusEl = $('.tcx-step.is-active .tcx-q');
+    if (focusEl) { focusEl.setAttribute('tabindex', '-1'); focusEl.focus({ preventScroll: true }); }
+  }
+
+  $$('[data-goto]').forEach(function (b) {
+    b.addEventListener('click', function () { goTo(Number(b.dataset.goto)); });
+  });
+
+  /* ======================================================================
+     6. STEP 1 – kort
+     ====================================================================== */
+  Object.keys(TRACKS).forEach(function (key) {
+    var t = TRACKS[key];
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tcx-card';
+    btn.dataset.track = key;
+    btn.setAttribute('aria-pressed', 'false');
+    btn.innerHTML = '<span class="tcx-card-ico" aria-hidden="true">' + t.icon + '</span>' +
+                    '<span><span class="tcx-card-t">' + t.title + '</span>' +
+                    '<span class="tcx-card-d">' + t.desc + '</span></span>';
+    btn.addEventListener('click', function () { selectTrack(key); });
+    els.cards.appendChild(btn);
+  });
+
+  function selectTrack(key) {
+    if (state.track !== key) { state.answers = {}; }
+    state.track = key;
+    $$('.tcx-card').forEach(function (c) {
+      var on = c.dataset.track === key;
+      c.classList.toggle('is-sel', on);
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    var t = TRACKS[key];
+    els.s2Title.textContent = t.step2Title;
+    els.s2Sub.textContent = t.step2Sub;
+    renderFields();
+    renderInsights();
+    goTo(2);
+  }
+
+  /* ======================================================================
+     7. STEP 2 – dynamiske felter
+     ====================================================================== */
+  function fieldLabel(f, a) { return f.dynLabel ? f.dynLabel(a) : f.label; }
+  function fieldHelp(f, a)  { return f.dynHelp  ? f.dynHelp(a)  : (f.help || ''); }
+  function fieldUnit(f, a)  { return f.dynUnit  ? f.dynUnit(a)  : (f.unit || ''); }
+
+  function renderFields() {
+    var t = TRACKS[state.track], a = state.answers;
+    els.fields.innerHTML = '';
+    t.fields.forEach(function (f) {
+      var wrap = document.createElement('div');
+      wrap.className = 'tcx-fld';
+      wrap.dataset.key = f.key;
+
+      var help = fieldHelp(f, a);
+      var html = '<span class="tcx-fld-label">' + fieldLabel(f, a) + '</span>';
+      if (help) { html += '<span class="tcx-fld-help">' + help + '</span>'; }
+
+      if (f.type === 'choice') {
+        html += '<div class="tcx-opts" role="group">';
+        f.options.forEach(function (o) {
+          var sel = a[f.key] === o.v;
+          html += '<button type="button" class="tcx-opt' + (sel ? ' is-sel' : '') + '" data-val="' + o.v + '" aria-pressed="' + sel + '">' +
+                  o.l + (o.s ? '<small>' + o.s + '</small>' : '') + '</button>';
+        });
+        html += '</div>';
+      } else {
+        var unit = fieldUnit(f, a);
+        var val = (a[f.key] === undefined || a[f.key] === null) ? '' : a[f.key];
+        html += '<div class="tcx-inputwrap' + (unit ? ' has-unit' : '') + '">' +
+                '<input type="' + (f.type === 'number' ? 'number' : 'text') + '"' +
+                ' value="' + String(val).replace(/"/g, '&quot;') + '"' +
+                (f.placeholder ? ' placeholder="' + f.placeholder + '"' : '') +
+                (f.min !== undefined ? ' min="' + f.min + '"' : '') +
+                (f.max !== undefined ? ' max="' + f.max + '"' : '') +
+                (f.step !== undefined ? ' step="' + f.step + '"' : '') +
+                (f.maxlength ? ' maxlength="' + f.maxlength + '"' : '') +
+                (f.inputmode ? ' inputmode="' + f.inputmode + '"' : '') +
+                ' aria-label="' + fieldLabel(f, a).replace(/"/g, '') + '">' +
+                (unit ? '<span class="tcx-unit">' + unit + '</span>' : '') + '</div>';
+      }
+      html += '<span class="tcx-fld-err"></span>';
+      wrap.innerHTML = html;
+
+      if (f.type === 'choice') {
+        $$('.tcx-opt', wrap).forEach(function (b) {
+          b.addEventListener('click', function () {
+            a[f.key] = b.dataset.val;
+            wrap.classList.remove('has-error');
+            renderFields();
+            renderInsights();
+          });
+        });
+      } else {
+        var input = $('input', wrap);
+        input.addEventListener('input', function () {
+          var raw = input.value.trim().replace(',', '.');
+          if (f.type === 'number') {
+            a[f.key] = raw === '' ? undefined : parseFloat(raw);
+          } else {
+            a[f.key] = raw === '' ? undefined : raw;
+          }
+          wrap.classList.remove('has-error');
+          els.s2Err.textContent = '';
+          renderInsights();
+        });
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') { e.preventDefault(); $('#tcxToLead').click(); }
+        });
+      }
+      els.fields.appendChild(wrap);
+    });
+  }
+
+  function validateStep2() {
+    var t = TRACKS[state.track], a = state.answers, ok = true, firstBad = null;
+    t.fields.forEach(function (f) {
+      var wrap = $('.tcx-fld[data-key="' + f.key + '"]');
+      var errEl = $('.tcx-fld-err', wrap);
+      var v = a[f.key], msg = '';
+
+      if (v === undefined || v === '' || (typeof v === 'number' && isNaN(v))) {
+        msg = f.type === 'choice' ? 'Vælg venligst en mulighed.' : 'Udfyld venligst feltet.';
+      } else if (f.type === 'number') {
+        if (v <= 0) { msg = 'Indtast et tal større end 0.'; }
+        else if (f.min !== undefined && v < f.min) { msg = 'Værdien skal være mindst ' + num(f.min) + '.'; }
+        else if (f.max !== undefined && v > f.max) { msg = 'Værdien virker meget høj – ring til os på 74 52 47 23, så regner vi manuelt.'; }
+      } else if (f.key === 'postnr' && !zoneFor(v)) {
+        msg = 'Indtast et gyldigt dansk postnummer (4 cifre).';
+      }
+
+      wrap.classList.toggle('has-error', !!msg);
+      errEl.textContent = msg;
+      if (msg) { ok = false; if (!firstBad) { firstBad = wrap; } }
+    });
+    if (!ok) {
+      els.s2Err.textContent = 'Udfyld venligst de markerede felter, før vi kan regne på opgaven.';
+      if (firstBad) { firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    } else {
+      els.s2Err.textContent = '';
+    }
+    return ok;
+  }
+
+  /* ======================================================================
+     8. EKSPERT-INDSIGTER
+     ====================================================================== */
+  var shown = {};
+  function activeInsights() {
+    var t = TRACKS[state.track], a = state.answers;
+    return t.insights.filter(function (i) {
+      try { return !!i.when(a); } catch (e) { return false; }
+    });
+  }
+
+  function renderInsights() {
+    var list = activeInsights();
+    var ids = list.map(function (i) { return i.id; });
+
+    $$('.tcx-insight', els.insights).forEach(function (n) {
+      if (ids.indexOf(n.dataset.id) === -1) { n.remove(); delete shown[n.dataset.id]; }
+    });
+    list.forEach(function (i) {
+      if (shown[i.id]) { return; }
+      shown[i.id] = true;
+      var d = document.createElement('div');
+      d.className = 'tcx-insight';
+      d.dataset.id = i.id;
+      d.innerHTML = '<strong>Ekspert-indsigt 💡</strong>' + i.t;
+      els.insights.appendChild(d);
+    });
+  }
+
+  /* ======================================================================
+     9. STEP 3 – lead capture
+     ====================================================================== */
+  $('#tcxToLead').addEventListener('click', function () {
+    if (!validateStep2()) { return; }
+    state.result = TRACKS[state.track].calc(state.answers);
+    /* Har brugeren allerede afgivet sine oplysninger, skal gaten ikke vises igen –
+       så kan man frit rette i svarene og se prisen opdatere sig. */
+    if (state.lead.email) { showResult(); goTo(4); } else { goTo(3); }
+  });
+
+  function setErr(inputId, forName, msg) {
+    var field = $('#' + inputId).closest('.tcx-field');
+    var err = $('.tcx-ferr[data-for="' + forName + '"]');
+    if (field) { field.classList.toggle('has-error', !!msg); }
+    if (err) { err.textContent = msg || ''; err.classList.toggle('is-on', !!msg); }
+  }
+
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+  els.form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    if ($('#tcxHp').value !== '') { return; }             /* honeypot ramt */
+
+    var email = $('#tcxEmail').value.trim();
+    var navn = $('#tcxName').value.trim();
+    var tlf = $('#tcxPhone').value.trim();
+    var consent = $('#tcxConsent').checked;
+    var ok = true;
+
+    if (!email)                  { setErr('tcxEmail', 'email', 'Vi skal bruge din e-mail for at kunne sende rapporten.'); ok = false; }
+    else if (!EMAIL_RE.test(email)) { setErr('tcxEmail', 'email', 'E-mailen ser ikke helt rigtig ud – tjek den lige.'); ok = false; }
+    else                         { setErr('tcxEmail', 'email', ''); }
+
+    if (tlf && tlf.replace(/[^0-9]/g, '').length < 8) {
+      setErr('tcxPhone', 'telefon', 'Et dansk telefonnummer har 8 cifre.'); ok = false;
+    } else { setErr('tcxPhone', 'telefon', ''); }
+
+    var cErr = $('.tcx-ferr[data-for="consent"]');
+    if (!consent) { cErr.textContent = 'Sæt venligst flueben, så vi må kontakte dig om projektet.'; cErr.classList.add('is-on'); ok = false; }
+    else { cErr.textContent = ''; cErr.classList.remove('is-on'); }
+
+    if (!ok) { return; }
+
+    state.lead = {
+      navn: navn || '', email: email, telefon: tlfPen(tlf), samtykke: true,
+      tidspunkt: new Date().toISOString()
+    };
+    showResult();
+    goTo(4);
+    pushLead();
+  });
+
+  /* Integrationspunkt: send leadet videre til CRM, Zapier, n8n, e-mail m.m. */
+  function pushLead() {
+    var payload = {
+      omraade: TRACKS[state.track].title,
+      omraadeId: state.track,
+      svar: summaryPairs(),
+      estimat: { min: state.result.min, max: state.result.max, midt: state.result.total, valuta: 'DKK', momsfri: true },
+      lead: state.lead,
+      kilde: (location && location.href) || ''
+    };
+    try { console.log('[Torben Clausen – nyt lead]', payload); } catch (e) {}
+    try { root.dispatchEvent(new CustomEvent('tc:lead', { bubbles: true, detail: payload })); } catch (e) {}
+    if (typeof window.TC_LEAD_ENDPOINT === 'string' && window.TC_LEAD_ENDPOINT) {
+      try {
+        fetch(window.TC_LEAD_ENDPOINT, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        }).catch(function () {});
+      } catch (e) {}
+    }
+  }
+
+  /* ======================================================================
+     10. STEP 4 – resultat
+     ====================================================================== */
+  function summaryPairs() {
+    var t = TRACKS[state.track], a = state.answers, out = [['Område', t.title]];
+    t.fields.forEach(function (f) {
+      var v = a[f.key], txt;
+      if (f.type === 'choice') {
+        var o = f.options.filter(function (x) { return x.v === v; })[0];
+        txt = o ? o.l : '–';
+      } else {
+        var u = fieldUnit(f, a);
+        txt = num(v, f.step === 1 ? 0 : 1) + (u && u !== 'årstal' && u !== 'postnr.' ? ' ' + u : '');
+        if (u === 'årstal' || u === 'postnr.') { txt = String(v); }
+      }
+      out.push([fieldLabel(f, a).replace(/\?$/, ''), txt]);
+    });
+    return out;
+  }
+
+  function showResult() {
+    var r = state.result;
+    r.min = roundTo(r.total * 0.85, 500);
+    r.max = roundTo(r.total * 1.15, 500);
+
+    els.resultEyebrow.textContent = TRACKS[state.track].title;
+    els.price.textContent = kr(r.min).replace(' kr.', '') + ' – ' + kr(r.max);
+
+    els.table.innerHTML = '';
+    r.lines.forEach(function (l) {
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + l.l + (l.s ? '<small>' + l.s + '</small>' : '') + '</td><td>' + kr(l.v) + '</td>';
+      els.table.appendChild(tr);
+    });
+    var tot = document.createElement('tr');
+    tot.className = 'is-total';
+    tot.innerHTML = '<td>Estimeret pris i alt (ekskl. moms)</td><td>' + kr(r.total) + '</td>';
+    els.table.appendChild(tot);
+
+    els.summary.innerHTML = '';
+    summaryPairs().forEach(function (p) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span>' + p[0] + '</span><span>' + p[1] + '</span>';
+      els.summary.appendChild(li);
+    });
+
+    els.insightsResult.innerHTML = '';
+    activeInsights().slice(0, 2).forEach(function (i) {
+      var d = document.createElement('div');
+      d.className = 'tcx-insight';
+      d.innerHTML = '<strong>Ekspert-indsigt 💡</strong>' + i.t;
+      els.insightsResult.appendChild(d);
+    });
+
+    var hilsen = state.lead.navn ? ('Tak, ' + state.lead.navn.split(' ')[0] + ' – her er dit estimat') : 'Vejledende prisinterval';
+    $('#tcxResultTitle').textContent = hilsen;
+    els.pdfNote.textContent = '';
+  }
+
+  $('#tcxRestart').addEventListener('click', function () {
+    state = { step: 1, track: null, answers: {}, lead: {}, result: null };
+    shown = {};
+    els.insights.innerHTML = '';
+    els.insightsResult.innerHTML = '';
+    els.form.reset();
+    $$('.tcx-card').forEach(function (c) { c.classList.remove('is-sel'); c.setAttribute('aria-pressed', 'false'); });
+    $$('.tcx-ferr').forEach(function (e2) { e2.textContent = ''; e2.classList.remove('is-on'); });
+    $$('.tcx-field').forEach(function (f) { f.classList.remove('has-error'); });
+    els.s2Err.textContent = '';
+    goTo(1);
+  });
+
+  /* ======================================================================
+     11. PDF-RAPPORT (jsPDF)
+     ====================================================================== */
+  var RED = [196, 32, 50], INK = [36, 36, 36], SOFT = [110, 110, 110], LINE = [222, 222, 222], BG = [246, 246, 246];
+  var M = 18, W = 210, H = 297;
+
+  function daDato() {
+    var d = new Date();
+    return ('0' + d.getDate()).slice(-2) + '. ' +
+      ['januar','februar','marts','april','maj','juni','juli','august','september','oktober','november','december'][d.getMonth()] +
+      ' ' + d.getFullYear();
+  }
+  function refNr() {
+    var d = new Date();
+    return 'TC-' + String(d.getFullYear()).slice(2) + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2) +
+      '-' + String(Math.floor(1000 + Math.random() * 9000));
+  }
+
+  function pdfHeader(doc, undertitel) {
+    doc.setFillColor(RED[0], RED[1], RED[2]);
+    doc.rect(0, 0, W, 30, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(17);
+    doc.text('TORBEN CLAUSEN A/S', M, 14);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('Entrepriser på sikker grund', M, 20.5);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+    doc.text(undertitel, W - M, 14, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(daDato(), W - M, 20.5, { align: 'right' });
+  }
+
+  function pdfFooter(doc, side, ref) {
+    doc.setDrawColor(LINE[0], LINE[1], LINE[2]); doc.setLineWidth(0.3);
+    doc.line(M, H - 20, W - M, H - 20);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.8);
+    doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    doc.text('Torben Clausen A/S · Oksbølvej 14, 6100 Haderslev · Tlf. 74 52 47 23 · info@torbenclausen.dk · CVR 14163581', M, H - 14.5);
+    doc.text('Ref. ' + ref + '  ·  Side ' + side + ' af 2', M, H - 10.5);
+  }
+
+  function wrap(doc, txt, x, y, w, lh) {
+    var lines = doc.splitTextToSize(txt, w);
+    doc.text(lines, x, y);
+    return y + lines.length * lh;
+  }
+
+  els.pdfBtn.addEventListener('click', function () {
+    var lib = window.jspdf || window.jsPDF;
+    if (!lib || !lib.jsPDF) {
+      els.pdfNote.textContent = 'PDF-værktøjet kunne ikke indlæses. Prøv at genindlæse siden – eller ring til os på 74 52 47 23, så sender vi rapporten på mail.';
+      return;
+    }
+    els.pdfBtn.disabled = true;
+    els.pdfNote.textContent = 'Genererer din rapport …';
+
+    try {
+      buildPdf(new lib.jsPDF({ unit: 'mm', format: 'a4' }));
+      els.pdfNote.textContent = 'Rapporten er hentet. Har du spørgsmål til estimatet, så ring på 74 52 47 23.';
+    } catch (err) {
+      els.pdfNote.textContent = 'Der opstod en fejl under genereringen. Ring til os på 74 52 47 23, så sender vi rapporten på mail.';
+      try { console.error(err); } catch (e) {}
+    }
+    els.pdfBtn.disabled = false;
+  });
+
+  function buildPdf(doc) {
+    var t = TRACKS[state.track], a = state.answers, r = state.result, lead = state.lead;
+    var ref = refNr(), CW = W - M * 2, y;
+
+    /* ---------------- SIDE 1 ---------------- */
+    pdfHeader(doc, 'PROJEKTRAPPORT');
+
+    doc.setTextColor(INK[0], INK[1], INK[2]);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(24);
+    doc.text('Din Projekt-Rapport', M, 45);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+    doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    y = wrap(doc, t.title + ' – vejledende prisestimat udarbejdet på baggrund af dine oplysninger.', M, 53, CW, 5.5);
+
+    /* Kunde */
+    y += 4;
+    doc.setFillColor(BG[0], BG[1], BG[2]);
+    doc.rect(M, y, CW, 24, 'F');
+    doc.setFontSize(8.5); doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    doc.text('REKVIRENT', M + 6, y + 7);
+    doc.text('KONTAKT', M + 78, y + 7);
+    doc.text('SAGSNR.', M + 138, y + 7);
+    doc.setFontSize(10.5); doc.setTextColor(INK[0], INK[1], INK[2]); doc.setFont('helvetica', 'bold');
+    doc.text(lead.navn || 'Ikke oplyst', M + 6, y + 13.5);
+    doc.text(ref, M + 138, y + 13.5);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text(doc.splitTextToSize(lead.email, 56), M + 78, y + 13.5);
+    if (lead.telefon) { doc.text('Tlf. ' + tlfPen(lead.telefon), M + 78, y + 18.5); }
+    y += 31;
+
+    /* Projektoplysninger */
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(INK[0], INK[1], INK[2]);
+    doc.text('Dine projektoplysninger', M, y);
+    y += 3;
+    doc.setDrawColor(RED[0], RED[1], RED[2]); doc.setLineWidth(0.8);
+    doc.line(M, y, M + 26, y);
+    y += 8;
+    doc.setFontSize(10);
+    summaryPairs().forEach(function (p) {
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+      doc.text(doc.splitTextToSize(p[0], 108), M, y);
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(INK[0], INK[1], INK[2]);
+      doc.text(String(p[1]), W - M, y, { align: 'right' });
+      doc.setDrawColor(LINE[0], LINE[1], LINE[2]); doc.setLineWidth(0.2);
+      doc.line(M, y + 2.6, W - M, y + 2.6);
+      y += 7.2;
+    });
+
+    /* Prisboks */
+    y += 4;
+    doc.setFillColor(BG[0], BG[1], BG[2]);
+    doc.rect(M, y, CW, 36, 'F');
+    doc.setFillColor(RED[0], RED[1], RED[2]);
+    doc.rect(M, y, CW, 1.6, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    doc.text('ESTIMERET PRIS FOR OPGAVEN', W / 2, y + 10, { align: 'center' });
+    doc.setFontSize(22); doc.setTextColor(RED[0], RED[1], RED[2]);
+    doc.text(kr(r.min).replace(' kr.', '') + ' – ' + kr(r.max), W / 2, y + 22, { align: 'center' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+    doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    doc.text('Ekskl. moms · vejledende interval ±15 %', W / 2, y + 29.5, { align: 'center' });
+    y += 41;
+
+    /* Specifikation */
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(INK[0], INK[1], INK[2]);
+    doc.text('Sådan er estimatet sammensat', M, y);
+    y += 7;
+    doc.setFontSize(9.5);
+    r.lines.forEach(function (l) {
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(INK[0], INK[1], INK[2]);
+      var lines = doc.splitTextToSize(l.l, 118);
+      doc.text(lines, M, y);
+      doc.setFont('helvetica', 'bold');
+      doc.text(kr(l.v), W - M, y, { align: 'right' });
+      var h = lines.length * 4.4;
+      if (l.s) {
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+        doc.text(l.s, M, y + h);
+        doc.setFontSize(9.5);
+        h += 4.2;
+      }
+      y += h + 2.8;
+    });
+    doc.setDrawColor(INK[0], INK[1], INK[2]); doc.setLineWidth(0.5);
+    doc.line(M, y, W - M, y);
+    y += 6;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(INK[0], INK[1], INK[2]);
+    doc.text('Estimeret pris i alt (ekskl. moms)', M, y);
+    doc.text(kr(r.total), W - M, y, { align: 'right' });
+
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    wrap(doc, 'Estimatet er vejledende og udgør ikke et bindende tilbud. Det bygger på vores erfaringspriser for tilsvarende opgaver i Syd- og Sønderjylland – den endelige pris fastlægges efter besigtigelse.', M, Math.min(y + 10, H - 29), CW, 3.8);
+
+    pdfFooter(doc, 1, ref);
+
+    /* ---------------- SIDE 2 ---------------- */
+    doc.addPage();
+    pdfHeader(doc, 'PROJEKT-GUIDE');
+
+    doc.setTextColor(INK[0], INK[1], INK[2]);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(24);
+    doc.text('Din Personlige Projekt-Guide', M, 48);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10.5);
+    doc.setTextColor(SOFT[0], SOFT[1], SOFT[2]);
+    y = wrap(doc, 'Tre konkrete råd fra vores folk – valgt ud fra netop de svar, du har givet. De handler alle om det samme: at flytte penge fra unødvendig kørsel og deponi over i det arbejde, du faktisk skal have udført.', M, 56, CW, 5.2);
+    y += 8;
+
+    t.tips(a).forEach(function (tip) {
+      doc.setFillColor(RED[0], RED[1], RED[2]);
+      doc.rect(M, y - 4.5, 1.6, 6.5, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(INK[0], INK[1], INK[2]);
+      y = wrap(doc, tip.h, M + 6, y, CW - 6, 5.6);
+      y += 2.5;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(70, 70, 70);
+      y = wrap(doc, tip.b, M + 6, y, CW - 6, 5);
+      y += 11;
+    });
+
+    /* CTA */
+    var cy = Math.max(y, H - 78);
+    doc.setFillColor(RED[0], RED[1], RED[2]);
+    doc.rect(M, cy, CW, 44, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+    doc.text('Klar til en fast pris?', M + 8, cy + 13);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+    wrap(doc, 'Vi kommer gerne forbi og ser på opgaven – uforpligtende. Efter besigtigelsen får du et fast tilbud, så du kender prisen, før første maskine kører ind på grunden.', M + 8, cy + 21, CW - 16, 4.8);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+    doc.text('Ring til os på 74 52 47 23', M + 8, cy + 38);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+    doc.text('info@torbenclausen.dk', W - M - 8, cy + 38, { align: 'right' });
+
+    pdfFooter(doc, 2, ref);
+
+    var navnDel = (lead.navn || 'kunde').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'kunde';
+    doc.save('torben-clausen-projektrapport-' + navnDel + '.pdf');
+  }
+
+  /* ======================================================================
+     12. INIT
+     ====================================================================== */
+  goTo(1);
+})();
+</script>
